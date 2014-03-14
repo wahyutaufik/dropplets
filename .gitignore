@@ -22,3 +22,9 @@ posts/*
 cache/*.png
 cache/*.jpeg
 cache/*.jpg
+
+vendor
+composer.lock
+
+*.sublime-project
+*.sublime-workspace

@@ -8,13 +8,26 @@ include('./dropplets/includes/feedwriter.php');
 include('./dropplets/includes/markdown.php');
 include('./dropplets/includes/phpass.php');
 include('./dropplets/includes/actions.php');
+include('./dropplets/includes/ciconia.php');
+include('./vendor/autoload.php');
+
+use Ciconia\Ciconia;
+use Ciconia\Extension\Gfm;
+
+$ciconia = new Ciconia();
+$ciconia->addExtension(new Gfm\UrlAutoLinkExtension());
+$ciconia->addExtension(new Gfm\InlineStyleExtension());
+$ciconia->addExtension(new Gfm\FencedCodeBlockExtension());
+$ciconia->addExtension(new Gfm\TaskListExtension());
+$ciconia->addExtension(new Gfm\TableExtension());
+$ciconia->addExtension(new Gfm\WhiteSpaceExtension());
 
 /*-----------------------------------------------------------------------------------*/
 /* User Machine
 /*-----------------------------------------------------------------------------------*/
 
 // Password hashing via phpass.
-$hasher  = new PasswordHash(8,FALSE);
+$hasher  = new PasswordHash(8, FALSE);
 
 if (isset($_GET['action']))
 {
@@ -30,7 +43,7 @@ if (isset($_GET['action']))
                 // Redirect if authenticated.
                 header('Location: ' . './');
             } else {
-                
+
                 // Display error if not authenticated.
                 $login_error = 'Nope, try again!';
             }
@@ -44,16 +57,16 @@ if (isset($_GET['action']))
             // Redirect to dashboard on logout.
             header('Location: ' . './');
             break;
-        
+
         // Fogot password.
         case 'forgot':
-            
+
             // The verification file.
             $verification_file = "./verify.php";
-            
+
             // If verified, allow a password reset.
             if (!isset($_GET["verify"])) {
-            
+
                 $code = sha1(md5(rand()));
 
                 $verify_file_contents[] = "<?php";
@@ -69,8 +82,8 @@ if (isset($_GET['action']))
 
                 mail($blog_email, $blog_title . " - Recover your Dropplets Password", $message, implode("\r\n", $headers));
                 $login_error = "Details on how to recover your password have been sent to your email.";
-            
-            // If not verified, display a verification error.   
+
+            // If not verified, display a verification error.
             } else {
 
                 include($verification_file);
@@ -83,8 +96,8 @@ if (isset($_GET['action']))
                 }
             }
             break;
-        
-        // Invalidation            
+
+        // Invalidation
         case 'invalidate':
             if (!$_SESSION['user']) {
                 $login_error = 'Nope, try again!';
@@ -92,19 +105,19 @@ if (isset($_GET['action']))
                 if (!file_exists($upload_dir . 'cache/')) {
                     return;
                 }
-                
+
                 $files = glob($upload_dir . 'cache/*');
-                
+
                 foreach ($files as $file) {
                     if (is_file($file))
                         unlink($file);
                 }
             }
-            
+
             header('Location: ' . './');
             break;
     }
-    
+
 }
 
 define('LOGIN_ERROR', $login_error);
@@ -114,7 +127,7 @@ define('LOGIN_ERROR', $login_error);
 /*-----------------------------------------------------------------------------------*/
 
 function get_all_posts($options = array()) {
-    global $dropplets;
+    global $dropplets, $ciconia;
 
     if($handle = opendir(POSTS_DIR)) {
 
@@ -151,10 +164,12 @@ function get_all_posts($options = array()) {
                 $post_status = str_replace(array("\n", '- '), '', $fcontents[5]);
 
                 // Define the post intro.
-                $post_intro = Markdown($fcontents[7]);
+                // $post_intro = Markdown($fcontents[7]);
+                $post_intro = $ciconia->render($fcontents[7]);
 
                 // Define the post content
-                $post_content = Markdown(join('', array_slice($fcontents, 6, $fcontents.length -1)));
+                // $post_content = Markdown(join('', array_slice($fcontents, 6, $fcontents.length -1)));
+                $post_content = $ciconia->render(join('', array_slice($fcontents, 6, $fcontents.length -1)));
 
                 // Pull everything together for the loop.
                 $files[] = array('fname' => $entry, 'post_title' => $post_title, 'post_author' => $post_author, 'post_author_twitter' => $post_author_twitter, 'post_date' => $post_date, 'post_category' => $post_category, 'post_status' => $post_status, 'post_intro' => $post_intro, 'post_content' => $post_content);
@@ -180,7 +195,8 @@ function get_all_posts($options = array()) {
 /* Get Posts for Selected Category
 /*-----------------------------------------------------------------------------------*/
 
-function get_posts_for_category($category) {
+function get_posts_for_category($category)
+{
     $category = trim(strtolower($category));
     return get_all_posts(array("category" => $category));
 }
@@ -198,7 +214,9 @@ function get_post_image_url($filename)
     {
         $imgFile = sprintf("%s%s.%s", POSTS_DIR, $slug, $fmt);
         if (file_exists($imgFile))
+        {
             return sprintf("%s/%s.%s", "${blog_url}posts", $slug, $fmt);
+        }
     }
 
     return false;
@@ -213,14 +231,18 @@ function get_pagination($page,$total) {
     $string = '';
     $string .= "<ul style=\"list-style:none; width:400px; margin:15px auto;\">";
 
-    for ($i = 1; $i<=$total;$i++) {
-        if ($i == $page) {
+    for ($i = 1; $i<=$total;$i++)
+    {
+        if ($i == $page)
+        {
             $string .= "<li style='display: inline-block; margin:5px;' class=\"active\"><a class=\"button\" href='#'>".$i."</a></li>";
-        } else {
+        }
+        else
+        {
             $string .=  "<li style='display: inline-block; margin:5px;'><a class=\"button\" href=\"?page=".$i."\">".$i."</a></li>";
         }
     }
-    
+
     $string .= "</ul>";
     return $string;
 }
@@ -230,7 +252,7 @@ function get_pagination($page,$total) {
 /*-----------------------------------------------------------------------------------*/
 
 function get_installed_templates() {
-    
+
     // The currently active template.
     $active_template = ACTIVE_TEMPLATE;
 
@@ -239,7 +261,7 @@ function get_installed_templates() {
 
     // Get all templates in the templates directory.
     $available_templates = glob($templates_directory . '*');
-    
+
     foreach ($available_templates as $template):
 
         // Generate template names.
@@ -266,26 +288,26 @@ function get_installed_templates() {
 /*-----------------------------------------------------------------------------------*/
 
 function get_premium_templates($type = 'all', $target = 'blank') {
-    
+
     $templates = simplexml_load_file('http://dropplets.com/templates-'. $type .'.xml');
-    
+
     if($templates===FALSE) {
         // Feed not available.
     } else {
         foreach ($templates as $template):
-            
+
             // Define some variables
             $template_file_name=$template->file;
             $template_price=$template->price;
             $template_url=$template->url;
-            
+
             { ?>
             <li class="premium">
                 <img src="http://dropplets.com/demo/templates/<?php echo $template_file_name; ?>/screenshot.jpg">
-                <a class="buy" href="http://gum.co/dp-<?php echo $template_file_name; ?>" title="Purchase/Download"><?php echo $template_price; ?></a> 
-                <a class="preview" href="http://dropplets.com/demo/?template=<?php echo $template_file_name; ?>" title="Prview" target="_<?php echo $target; ?>">p</a>    
+                <a class="buy" href="http://gum.co/dp-<?php echo $template_file_name; ?>" title="Purchase/Download"><?php echo $template_price; ?></a>
+                <a class="preview" href="http://dropplets.com/demo/?template=<?php echo $template_file_name; ?>" title="Prview" target="_<?php echo $target; ?>">p</a>
             </li>
-            <?php } 
+            <?php }
         endforeach;
     }
 }
@@ -309,7 +331,7 @@ function count_premium_templates($type = 'all') {
 
 $homepage = BLOG_URL;
 
-// Get the current page.    
+// Get the current page.
 $currentpage  = @( $_SERVER["HTTPS"] != 'on' ) ? 'http://'.$_SERVER["SERVER_NAME"] : 'https://'.$_SERVER["SERVER_NAME"];
 $currentpage .= $_SERVER["REQUEST_URI"];
 
@@ -324,24 +346,24 @@ define('IS_SINGLE', !(IS_HOME || IS_CATEGORY));
 /*-----------------------------------------------------------------------------------*/
 
 function get_twitter_profile_img($username) {
-	
-	// Get the cached profile image.
+
+    // Get the cached profile image.
     $cache = IS_CATEGORY ? '.' : '';
     $array = split('/category/', $_SERVER['REQUEST_URI']);
     $array = split('/', $array[1]);
     if(count($array)!=1) $cache .= './.';
     $cache .= './cache/';
-	$profile_image = $cache.$username.'.jpg';
+    $profile_image = $cache.$username.'.jpg';
 
-	// Cache the image if it doesn't already exist.
-	if (!file_exists($profile_image)) {
-	    $image_url = 'http://dropplets.com/profiles/?id='.$username.'';
-	    $image = file_get_contents($image_url);
-	    file_put_contents($cache.$username.'.jpg', $image);
-	}
-	
-	// Return the image URL.
-	return $profile_image;
+    // Cache the image if it doesn't already exist.
+    if (!file_exists($profile_image)) {
+        $image_url = 'http://dropplets.com/profiles/?id='.$username.'';
+        $image = file_get_contents($image_url);
+        file_put_contents($cache.$username.'.jpg', $image);
+    }
+
+    // Return the image URL.
+    return $profile_image;
 }
 
 /*-----------------------------------------------------------------------------------*/
@@ -360,28 +382,25 @@ function get_header() { ?>
     <!-- RSS Feed Links -->
     <link rel="alternate" type="application/rss+xml" title="Subscribe using RSS" href="<?php echo BLOG_URL; ?>rss" />
     <link rel="alternate" type="application/atom+xml" title="Subscribe using Atom" href="<?php echo BLOG_URL; ?>atom" />
-    
+
     <!-- Dropplets Styles -->
     <link rel="stylesheet" href="<?php echo BLOG_URL; ?>dropplets/style/style.css">
     <link rel="shortcut icon" href="<?php echo BLOG_URL; ?>dropplets/style/images/favicon.png">
 
     <!-- User Header Injection -->
     <?php echo HEADER_INJECT; ?>
-    
+
     <!-- Plugin Header Injection -->
     <?php action::run('dp_header'); ?>
-<?php 
+<?php
 
-} 
+}
 
 /*-----------------------------------------------------------------------------------*/
 /* Dropplets Footer
 /*-----------------------------------------------------------------------------------*/
 
 function get_footer() { ?>
-    <!-- jQuery & Required Scripts -->
-    <script src="//code.jquery.com/jquery-1.10.2.min.js"></script>
-    
     <?php if (!IS_SINGLE && PAGINATION_ON_OFF !== "off") { ?>
     <!-- Post Pagination -->
     <script>
@@ -431,15 +450,15 @@ function get_footer() { ?>
         });
     </script>
     <?php } ?>
-    
+
     <!-- Dropplets Tools -->
     <?php include('./dropplets/tools.php'); ?>
-    
+
     <!-- User Footer Injection -->
     <?php echo FOOTER_INJECT; ?>
-    
+
     <!-- Plugin Footer Injection -->
     <?php action::run('dp_footer'); ?>
-<?php 
+<?php
 
 }

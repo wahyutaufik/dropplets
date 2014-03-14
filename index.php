@@ -1,7 +1,6 @@
 <?php
 
 session_start();
-
 /*-----------------------------------------------------------------------------------*/
 /* If There's a Config Exists, Continue
 /*-----------------------------------------------------------------------------------*/
@@ -25,7 +24,7 @@ if (empty($_GET['filename'])) {
 } else if($_GET['filename'] == 'rss' || $_GET['filename'] == 'atom') {
     $filename = $_GET['filename'];
 }  else {
-    
+
     //Filename can be /some/blog/post-filename.md We should get the last part only
     $filename = explode('/',$_GET['filename']);
 
@@ -34,7 +33,6 @@ if (empty($_GET['filename'])) {
         $category = $filename[count($filename) - 1];
         $filename = null;
     } else {
-      
         // Individual Post
         $filename = POSTS_DIR . $filename[count($filename) - 1] . FILE_EXT;
     }
@@ -95,7 +93,7 @@ if ($filename==NULL) {
 
             // Get the post category.
             $post_category = $post['post_category'];
-            
+
             // Get the post category link.
             $post_category_link = $blog_url.'category/'.urlencode(trim(strtolower($post_category)));
 
@@ -129,7 +127,8 @@ if ($filename==NULL) {
         // Get the site title
         $page_title = $blog_title;
 
-        $blog_image = 'https://api.twitter.com/1/users/profile_image?screen_name='.$blog_twitter.'&size=bigger';
+        // $blog_image = 'https://api.twitter.com/1/users/profile_image?screen_name='.$blog_twitter.'&size=bigger';
+        $blog_image = '';
 
         // Get the page description and author meta.
         $get_page_meta[] = '<meta name="description" content="' . $meta_description . '">';
@@ -218,18 +217,18 @@ else if ($filename == 'rss' || $filename == 'atom') {
                 $item->setDate($post['post_date']);
 
                 // Remove Meta from the RSS feed.
-				$remove_metadata_from = file(rtrim(POSTS_DIR, '/').'/'.$post['fname']);
+                $remove_metadata_from = file(rtrim(POSTS_DIR, '/').'/'.$post['fname']);
 
                 if($filename=='rss') {
                     $item->addElement('author', str_replace('-', '', $remove_metadata_from[1]).' - ' . $blog_email);
                     $item->addElement('guid', rtrim($blog_url, '/').'/'.str_replace(FILE_EXT, '', $post['fname']));
                 }
 
-				// Remove the metadata from the RSS feed.
-				unset($remove_metadata_from[0], $remove_metadata_from[1], $remove_metadata_from[2], $remove_metadata_from[3], $remove_metadata_from[4], $remove_metadata_from[5]);
-				$remove_metadata_from = array_values($remove_metadata_from);
+                // Remove the metadata from the RSS feed.
+                unset($remove_metadata_from[0], $remove_metadata_from[1], $remove_metadata_from[2], $remove_metadata_from[3], $remove_metadata_from[4], $remove_metadata_from[5]);
+                $remove_metadata_from = array_values($remove_metadata_from);
 
-                $item->setDescription(Markdown(implode($remove_metadata_from)));
+                $item->setDescription($ciconia->render(implode($remove_metadata_from)));
 
                 $feed->addItem($item);
                 $c++;
@@ -278,7 +277,7 @@ else {
         // Start new buffer.
         ob_start();
 
-	      // Get the index template file.
+          // Get the index template file.
         include_once $index_file;
 
         // Cache the post on if caching is turned on.
@@ -304,7 +303,7 @@ else {
     } else {
 
         // Get the post title.
-        $post_title = Markdown($fcontents[0]);
+        $post_title = $ciconia->render($fcontents[0]);
         $post_title = str_replace(array("\n",'<h1>','</h1>'), '', $post_title);
 
         // Get the post intro.
@@ -324,10 +323,10 @@ else {
 
         // Get the post category.
         $post_category = str_replace(array("\n", '-'), '', $fcontents[4]);
-        
+
         // Get the post status.
         $post_status = str_replace(array("\n", '- '), '', $fcontents[5]);
-        
+
         // Get the post category link.
         $post_category_link = $blog_url.'category/'.urlencode(trim(strtolower($post_category)));
 
@@ -339,11 +338,11 @@ else {
 
         // Get the post content
         $file_array = array_slice( file($filename), 7);
-        $post_content = Markdown(trim(implode("", $file_array)));
+        $post_content = $ciconia->render(trim(implode("", $file_array)));
 
         // free memory
         unset($file_array);
-                
+
         // Get the site title.
         $page_title = trim(str_replace('# ', '', $fcontents[0]));
 
@@ -372,7 +371,7 @@ else {
         $page_meta = implode("\n\t", $get_page_meta);
 
         // Generate the post.
-        $post = Markdown(join('', $fcontents));
+        $post = $ciconia->render(join('', $fcontents));
 
         // Get the post template file.
         include $post_file;
@@ -419,7 +418,7 @@ else {
     }
 
     $url .= $path;
-    
+
     // Check if the install directory is writable.
     $is_writable = (TRUE == is_writable(dirname(__FILE__) . '/'));
     ?>
@@ -438,10 +437,10 @@ else {
         <body class="dp-install">
             <form method="POST" action="./dropplets/save.php">
                 <a class="dp-icon-dropplets" href="http://dropplets.com" target="_blank"></a>
-                
+
                 <h2>Install Dropplets</h2>
                 <p>Welcome to an easier way to blog.</p>
-                
+
                 <input type="password" name="password" id="password" required placeholder="Choose Your Password">
                 <input type="password" name="password-confirmation" id="password-confirmation" required placeholder="Confirm Your Password" onblur="confirmPass()">
 
@@ -454,25 +453,25 @@ else {
                 <input hidden type="text" name="intro_title" id="intro_title" value="Welcome to Dropplets">
                 <textarea hidden name="intro_text" id="intro_text">In a flooded selection of overly complex solutions, Dropplets has been created in order to deliver a much needed alternative. There is something to be said about true simplicity in the design, development and management of a blog. By eliminating all of the unnecessary elements found in typical solutions, Dropplets can focus on pure design, typography and usability. Welcome to an easier way to blog.</textarea>
 
-    		    <button type="submit" name="submit" value="submit">k</button>
-    		</form>
-                
+                <button type="submit" name="submit" value="submit">k</button>
+            </form>
+
             <?php if (!$is_writable) { ?>
                 <p style="color:red;">It seems that your config folder is not writable, please add the necessary permissions.</p>
             <?php } ?>
 
             <script>
-            	function confirmPass() {
-            		var pass = document.getElementById("password").value
-            		var confPass = document.getElementById("password-confirmation").value
-            		if(pass != confPass) {
-            			alert('Your passwords do not match!');
-            		}
-            	}
+                function confirmPass() {
+                    var pass = document.getElementById("password").value
+                    var confPass = document.getElementById("password-confirmation").value
+                    if(pass != confPass) {
+                        alert('Your passwords do not match!');
+                    }
+                }
             </script>
         </body>
     </html>
-<?php 
+<?php
 
 /*-----------------------------------------------------------------------------------*/
 /* That's All There is to It

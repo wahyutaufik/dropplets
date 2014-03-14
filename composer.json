@@ -1,0 +1,6 @@
+{
+    "require": {
+        "kzykhys/ciconia": "~1.0.0",
+        "phpfastcache/phpfastcache": "dev-Stable-Version-1.x"
+    }
+}

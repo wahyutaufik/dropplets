@@ -1,7 +1,7 @@
 Dropplets
 =========
 
-Dropplets is a minimalist **Markdown** blogging platform focused on delivering just what you need in a blogging solution, but absolutely nothing you don't. When it comes to basic blogging, all you really want to do is write & publish which is where Dropplets excels. It's databaseless, so it installs on any server in just about 30 seconds. 
+Dropplets is a minimalist **Markdown** blogging platform focused on delivering just what you need in a blogging solution, but absolutely nothing you don't. When it comes to basic blogging, all you really want to do is write & publish which is where Dropplets excels. It's databaseless, so it installs on any server in just about 30 seconds.
 
 ## What's Markdown?
 Markdown is a text formatting syntax inspired on plain text email. It is extremely simple, memorizable and visually lightweight on artifacts so as not to hinder reading.
@@ -22,7 +22,7 @@ Markdown is a text formatting syntax inspired on plain text email. It is extreme
 Dropplets is compatible with most server configurations and can be typically installed in under a minute using the few step-by-step instructions below:
 
 1. Download the latest **release** and then extract the downloaded zip file.
-3. Upload the entire contents of the extracted zip file to your web server wherever you want Dropplets to be installed. 
+3. Upload the entire contents of the extracted zip file to your web server wherever you want Dropplets to be installed.
 4. Pull up your site in any modern web browser (e.g. if you uploaded Dropplets to **yoursite.com**, load **yoursite.com** in your browser to finish the installation), then create and confirm your password.
 
 ## Writing Posts
@@ -35,8 +35,8 @@ With Dropplets, you write your posts offline (using the text or Markdown editor 
     - Post Category (e.g. "Random Thoughts")
     - Post Status (e.g. "published" or "draft")
 
-    Your post text starts here. 
-    
+    Your post text starts here.
+
 All posts must also be saved with the **.md** file extension. For instance, if your post title is **My First Blog Post**, your post file should look like this:
 
     my-first-blog-post.md

@@ -62,7 +62,7 @@ if ($_POST["submit"] == "submit" && (!file_exists($settings_file) || isset($_SES
     }
 
     if(!isset($header_inject)) {
-        $header_inject = "";        
+        $header_inject = "";
     }
 
     if(isset($_POST["header_inject"])) {
@@ -72,7 +72,7 @@ if ($_POST["submit"] == "submit" && (!file_exists($settings_file) || isset($_SES
     if(!isset($footer_inject)) {
         $footer_inject = "";
     }
-    
+
     if(isset($_POST["footer_inject"])) {
         $footer_inject = addslashes($_POST["footer_inject"]);
     }
@@ -93,13 +93,13 @@ if ($_POST["submit"] == "submit" && (!file_exists($settings_file) || isset($_SES
     $config[] = settings_format("header_inject", $header_inject);
     $config[] = settings_format("footer_inject", $footer_inject);
     $config[] = settings_format("template", $template);
-    
+
     // Create the settings file.
     file_put_contents($settings_file, implode("\n", $config));
-    
+
     // Generate the .htaccess file on initial setup only.
     if (!file_exists($htaccess_file)) {
-    
+
         // Parameters for the htaccess file.
         $htaccess[] = "# Pretty Permalinks";
         $htaccess[] = "RewriteRule ^(images)($|/) - [L]";
@@ -111,7 +111,7 @@ if ($_POST["submit"] == "submit" && (!file_exists($settings_file) || isset($_SES
         $htaccess[] = "RewriteCond %{REQUEST_URI} !index\.php";
         $htaccess[] = "RewriteCond %{REQUEST_FILENAME} !-f";
         $htaccess[] = "RewriteRule ^(.*)$ index.php?filename=$1 [NC,QSA,L]";
-    
+
         // Generate the .htaccess file.
         file_put_contents($htaccess_file, implode("\n", $htaccess));
     }
