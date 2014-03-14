@@ -32,23 +32,23 @@ $hasher  = new PasswordHash(8, FALSE);
 if (isset($_GET['action']))
 {
     $action = $_GET['action'];
+
     switch ($action)
     {
-
         // Logging in.
         case 'login':
-            if ((isset($_POST['password'])) && $hasher->CheckPassword($_POST['password'], $password)) {
+            if ((isset($_POST['password'])) && $hasher->CheckPassword($_POST['password'], $password))
+            {
                 $_SESSION['user'] = true;
-
                 // Redirect if authenticated.
                 header('Location: ' . './');
-            } else {
-
+            }
+            else
+            {
                 // Display error if not authenticated.
                 $login_error = 'Nope, try again!';
             }
             break;
-
         // Logging out.
         case 'logout':
             session_unset();
@@ -57,16 +57,14 @@ if (isset($_GET['action']))
             // Redirect to dashboard on logout.
             header('Location: ' . './');
             break;
-
         // Fogot password.
         case 'forgot':
-
             // The verification file.
             $verification_file = "./verify.php";
 
             // If verified, allow a password reset.
-            if (!isset($_GET["verify"])) {
-
+            if (!isset($_GET["verify"]))
+            {
                 $code = sha1(md5(rand()));
 
                 $verify_file_contents[] = "<?php";
@@ -84,25 +82,30 @@ if (isset($_GET['action']))
                 $login_error = "Details on how to recover your password have been sent to your email.";
 
             // If not verified, display a verification error.
-            } else {
-
+            }
+            else
+            {
                 include($verification_file);
 
-                if ($_GET["verify"] == $verification_code) {
+                if ($_GET["verify"] == $verification_code)
+                {
                     $_SESSION["user"] = true;
                     unlink($verification_file);
-                } else {
+                }
+                else
+                {
                     $login_error = "That's not the correct recovery code!";
                 }
             }
             break;
-
         // Invalidation
         case 'invalidate':
-            if (!$_SESSION['user']) {
+            if (!$_SESSION['user'])
+            {
                 $login_error = 'Nope, try again!';
             } else {
-                if (!file_exists($upload_dir . 'cache/')) {
+                if (!file_exists($upload_dir . 'cache/'))
+                {
                     return;
                 }
 
@@ -126,16 +129,20 @@ define('LOGIN_ERROR', $login_error);
 /* Get All Posts Function
 /*-----------------------------------------------------------------------------------*/
 
-function get_all_posts($options = array()) {
+function get_all_posts($options = array())
+{
     global $dropplets, $ciconia;
 
-    if($handle = opendir(POSTS_DIR)) {
+    if($handle = opendir(POSTS_DIR))
+    {
 
         $files = array();
         $filetimes = array();
 
-        while (false !== ($entry = readdir($handle))) {
-            if(substr(strrchr($entry,'.'),1)==ltrim(FILE_EXT, '.')) {
+        while (false !== ($entry = readdir($handle)))
+        {
+            if(substr(strrchr($entry,'.'),1)==ltrim(FILE_EXT, '.'))
+            {
 
                 // Define the post file.
                 $fcontents = file(POSTS_DIR.$entry);
@@ -156,7 +163,8 @@ function get_all_posts($options = array()) {
                 $post_category = str_replace(array("\n", '-'), '', $fcontents[4]);
 
                 // Early return if we only want posts from a certain category
-                if($options["category"] && $options["category"] != trim(strtolower($post_category))) {
+                if($options["category"] && $options["category"] != trim(strtolower($post_category)))
+                {
                     continue;
                 }
 
@@ -186,7 +194,9 @@ function get_all_posts($options = array()) {
         array_multisort($post_dates, SORT_DESC, $files);
         return $files;
 
-    } else {
+    }
+    else
+    {
         return false;
     }
 }
@@ -263,12 +273,12 @@ function get_installed_templates() {
     $available_templates = glob($templates_directory . '*');
 
     foreach ($available_templates as $template):
-
         // Generate template names.
         $template_dir_name = substr($template, 12);
 
         // Template screenshots.
-        $template_screenshot = '' . $templates_directory . '' . $template_dir_name . '/screenshot.jpg'; {
+        $template_screenshot = '' . $templates_directory . '' . $template_dir_name . '/screenshot.jpg';
+        {
             ?>
             <li<?php if($active_template == $template_dir_name) { ?> class="active"<?php } ?>>
                 <div class="shadow"></div>
@@ -291,7 +301,8 @@ function get_premium_templates($type = 'all', $target = 'blank') {
 
     $templates = simplexml_load_file('http://dropplets.com/templates-'. $type .'.xml');
 
-    if($templates===FALSE) {
+    if($templates === FALSE)
+    {
         // Feed not available.
     } else {
         foreach ($templates as $template):
@@ -316,9 +327,12 @@ function count_premium_templates($type = 'all') {
 
     $templates = simplexml_load_file('http://dropplets.com/templates-'. $type .'.xml');
 
-    if($templates===FALSE) {
+    if($templates===FALSE)
+    {
         // Feed not available.
-    } else {
+    }
+    else
+    {
         $templates = simplexml_load_file('http://dropplets.com/templates-'. $type .'.xml');
         $templates_count = $templates->children();
         echo count($templates_count);
@@ -329,14 +343,14 @@ function count_premium_templates($type = 'all') {
 /* If is Home (Could use "is_single", "is_category" as well.)
 /*-----------------------------------------------------------------------------------*/
 
-$homepage = BLOG_URL;
+$homepage     = BLOG_URL;
 
 // Get the current page.
 $currentpage  = @( $_SERVER["HTTPS"] != 'on' ) ? 'http://'.$_SERVER["SERVER_NAME"] : 'https://'.$_SERVER["SERVER_NAME"];
 $currentpage .= $_SERVER["REQUEST_URI"];
 
 // If is home.
-$is_home = ($homepage==$currentpage);
+$is_home = ($homepage == $currentpage);
 define('IS_HOME', $is_home);
 define('IS_CATEGORY', (bool)strstr($_SERVER['REQUEST_URI'], '/category/'));
 define('IS_SINGLE', !(IS_HOME || IS_CATEGORY));
@@ -345,18 +359,23 @@ define('IS_SINGLE', !(IS_HOME || IS_CATEGORY));
 /* Get Profile Image
 /*-----------------------------------------------------------------------------------*/
 
-function get_twitter_profile_img($username) {
+function get_twitter_profile_img($username)
+{
 
     // Get the cached profile image.
     $cache = IS_CATEGORY ? '.' : '';
     $array = split('/category/', $_SERVER['REQUEST_URI']);
     $array = split('/', $array[1]);
-    if(count($array)!=1) $cache .= './.';
+    if(count($array)!=1)
+    {
+        $cache .= './.';
+    }
     $cache .= './cache/';
     $profile_image = $cache.$username.'.jpg';
 
     // Cache the image if it doesn't already exist.
-    if (!file_exists($profile_image)) {
+    if (!file_exists($profile_image))
+    {
         $image_url = 'http://dropplets.com/profiles/?id='.$username.'';
         $image = file_get_contents($image_url);
         file_put_contents($cache.$username.'.jpg', $image);
@@ -370,7 +389,8 @@ function get_twitter_profile_img($username) {
 /* Include All Plugins in Plugins Directory
 /*-----------------------------------------------------------------------------------*/
 
-foreach(glob('./plugins/' . '*.php') as $plugin){
+foreach(glob('./plugins/' . '*.php') as $plugin)
+{
     include_once $plugin;
 }
 
@@ -378,7 +398,8 @@ foreach(glob('./plugins/' . '*.php') as $plugin){
 /* Dropplets Header
 /*-----------------------------------------------------------------------------------*/
 
-function get_header() { ?>
+function get_header()
+{ ?>
     <!-- RSS Feed Links -->
     <link rel="alternate" type="application/rss+xml" title="Subscribe using RSS" href="<?php echo BLOG_URL; ?>rss" />
     <link rel="alternate" type="application/atom+xml" title="Subscribe using Atom" href="<?php echo BLOG_URL; ?>atom" />
@@ -393,62 +414,63 @@ function get_header() { ?>
     <!-- Plugin Header Injection -->
     <?php action::run('dp_header'); ?>
 <?php
-
 }
 
 /*-----------------------------------------------------------------------------------*/
 /* Dropplets Footer
 /*-----------------------------------------------------------------------------------*/
 
-function get_footer() { ?>
-    <?php if (!IS_SINGLE && PAGINATION_ON_OFF !== "off") { ?>
-    <!-- Post Pagination -->
-    <script>
-        var infinite = true;
-        var next_page = 2;
-        var loading = false;
-        var no_more_posts = false;
-        $(function() {
-            function load_next_page() {
-                $.ajax({
-                    url: "index.php?page=" + next_page,
-                    beforeSend: function () {
-                        $('body').append('<article class="loading-frame"><div class="row"><div class="one-quarter meta"></div><div class="three-quarters"><img src="./templates/<?php echo(ACTIVE_TEMPLATE); ?>/loading.gif" alt="Loading"></div></div></article>');
-                        $("body").animate({ scrollTop: $("body").scrollTop() + 250 }, 1000);
-                    },
-                    success: function (res) {
-                        next_page++;
-                        var result = $.parseHTML(res);
-                        var articles = $(result).filter(function() {
-                            return $(this).is('article');
-                        });
-                        if (articles.length < 2) {  //There's always one default article, so we should check if  < 2
-                            $('.loading-frame').html('You\'ve reached the end of this list.');
-                            no_more_posts = true;
-                        }  else {
-                            $('.loading-frame').remove();
-                            $('body').append(articles);
-                        }
-                        loading = false;
-                    },
-                    error: function() {
-                        $('.loading-frame').html('An error occurred while loading posts.');
-                        //keep loading equal to false to avoid multiple loads. An error will require a manual refresh
-                    }
+function get_footer()
+{ ?>
+    <?php if (!IS_SINGLE && PAGINATION_ON_OFF !== "off")
+    { ?>
+        <!-- Post Pagination -->
+        <script>var infinite = true,
+        next_page = 2,
+        loading = false,
+        no_more_posts = false;
+$(function() {
+    "use strict";
+    function load_next_page() {
+        $.ajax({
+            url: "index.php?page=" + next_page,
+            beforeSend: function () {
+                $('body').append('<article class="loading-frame"><div class="row"><div class="one-quarter meta"></div><div class="three-quarters"><img src="./templates/<?php echo(ACTIVE_TEMPLATE); ?>/loading.gif" alt="Loading"></div></div></article>');
+                $("body").animate({ scrollTop: $("body").scrollTop() + 250 }, 1000);
+            },
+            success: function (res) {
+                next_page = next_page + 1;
+                var result = $.parseHTML(res);
+                var articles = $(result).filter(function() {
+                    return $(this).is('article');
                 });
-            }
-
-            $(window).scroll(function() {
-                var when_to_load = $(window).scrollTop() * 0.32;
-                if (infinite && (loading != true && !no_more_posts) && $(window).scrollTop() + when_to_load > ($(document).height()- $(window).height() ) ) {
-                    // Sometimes the scroll function may be called several times until the loading is set to true.
-                    // So we need to set it as soon as possible
-                    loading = true;
-                    setTimeout(load_next_page, 500);
+                if (articles.length < 2) {  //There's always one default article, so we should check if  < 2
+                    $('.loading-frame').html('You\'ve reached the end of this list.');
+                    no_more_posts = true;
+                }  else {
+                    $('.loading-frame').remove();
+                    $('body').append(articles);
                 }
-            });
+                loading = false;
+            },
+            error: function() {
+                $('.loading-frame').html('An error occurred while loading posts.');
+                //keep loading equal to false to avoid multiple loads. An error will require a manual refresh
+            }
         });
-    </script>
+    }
+
+    $(window).scroll(function() {
+        var when_to_load = $(window).scrollTop() * 0.32;
+        if (infinite && (loading !== true && !no_more_posts) && $(window).scrollTop() + when_to_load > ($(document).height()- $(window).height() ) ) {
+            // Sometimes the scroll function may be called several times until the loading is set to true.
+            // So we need to set it as soon as possible
+            loading = true;
+            setTimeout(load_next_page, 500);
+        }
+    });
+});
+        </script>
     <?php } ?>
 
     <!-- Dropplets Tools -->
@@ -460,5 +482,4 @@ function get_footer() { ?>
     <!-- Plugin Footer Injection -->
     <?php action::run('dp_footer'); ?>
 <?php
-
 }

@@ -6,7 +6,7 @@ session_start();
 $settings_file = "../config.php";
 $htaccess_file = "../.htaccess";
 $phpass_file   = '../dropplets/includes/phpass.php';
-$dir = '';
+$dir           = '';
 
 // Get existing settings.
 if (file_exists($settings_file)) {
@@ -30,50 +30,63 @@ function settings_format($name, $value) {
 if ($_POST["submit"] == "submit" && (!file_exists($settings_file) || isset($_SESSION['user'])))
 {
     // Get submitted setup values.
-    if (isset($_POST["blog_email"])) {
+    if (isset($_POST["blog_email"]))
+    {
         $blog_email = $_POST["blog_email"];
     }
-    if (isset($_POST["blog_twitter"])) {
+    if (isset($_POST["blog_twitter"]))
+    {
         $blog_twitter = $_POST["blog_twitter"];
     }
-    if (isset($_POST["blog_url"])) {
+    if (isset($_POST["blog_url"]))
+    {
         $blog_url = $_POST["blog_url"];
     }
-    if (isset($_POST["blog_title"])) {
+    if (isset($_POST["blog_title"]))
+    {
         $blog_title = $_POST["blog_title"];
     }
-    if (isset($_POST["meta_description"])) {
+    if (isset($_POST["meta_description"]))
+    {
         $meta_description = $_POST["meta_description"];
     }
-    if (isset($_POST["intro_title"])) {
+    if (isset($_POST["intro_title"]))
+    {
         $intro_title = $_POST["intro_title"];
     }
-    if (isset($_POST["intro_text"])) {
+    if (isset($_POST["intro_text"]))
+    {
         $intro_text = $_POST["intro_text"];
     }
-    if (isset($_POST["template"])) {
+    if (isset($_POST["template"]))
+    {
         $template = $_POST["template"];
     }
 
     // There must always be a $password, but it can be changed optionally in the
     // settings, so you might not always get it in $_POST.
-    if (!isset($password) || !empty($_POST["password"])) {
+    if (!isset($password) || !empty($_POST["password"]))
+    {
         $password = $hasher->HashPassword($_POST["password"]);
     }
 
-    if(!isset($header_inject)) {
+    if(!isset($header_inject))
+    {
         $header_inject = "";
     }
 
-    if(isset($_POST["header_inject"])) {
+    if(isset($_POST["header_inject"]))
+    {
         $header_inject = addslashes($_POST["header_inject"]);
     }
 
-    if(!isset($footer_inject)) {
+    if(!isset($footer_inject))
+    {
         $footer_inject = "";
     }
 
-    if(isset($_POST["footer_inject"])) {
+    if(isset($_POST["footer_inject"]))
+    {
         $footer_inject = addslashes($_POST["footer_inject"]);
     }
 
@@ -98,7 +111,8 @@ if ($_POST["submit"] == "submit" && (!file_exists($settings_file) || isset($_SES
     file_put_contents($settings_file, implode("\n", $config));
 
     // Generate the .htaccess file on initial setup only.
-    if (!file_exists($htaccess_file)) {
+    if (!file_exists($htaccess_file))
+    {
 
         // Parameters for the htaccess file.
         $htaccess[] = "# Pretty Permalinks";

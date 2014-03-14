@@ -38,11 +38,11 @@ define('ACTIVE_TEMPLATE', $template);
 /* Definitions (These Should Be Moved to "Settings")
 /*-----------------------------------------------------------------------------------*/
 
-$language = 'en-us';
+$language       = 'en-us';
 $feed_max_items = '10';
-$date_format = '%B %d, %Y';
-$error_title = 'Sorry, but you have fucked up';
-$error_text = 'Really sorry, but what you&#8217;re looking for isn&#8217;t here. Click the button below to find something else that might interest you.';
+$date_format    = '%B %d, %Y';
+$error_title    = 'Sorry, but you have fucked up';
+$error_text     = 'Really sorry, but what you&#8217;re looking for isn&#8217;t here. Click the button below to find something else that might interest you.';
 
 setlocale(LC_ALL, '');
 
@@ -53,19 +53,21 @@ setlocale(LC_ALL, '');
 $pagination_on_off = "off"; //Infinite scroll by default?
 define('PAGINATION_ON_OFF', $pagination_on_off);
 
-$posts_per_page = 4;
+$posts_per_page    = 4;
 define('POSTS_PER_PAGE', $posts_per_page);
 
-$infinite_scroll = "off"; //Infinite scroll works only if pagination is on.
+$infinite_scroll   = "off"; //Infinite scroll works only if pagination is on.
 define('INFINITE_SCROLL', $infinite_scroll);
 
-$post_directory = './posts/';
+$post_directory  = './posts/';
 $cache_directory = './posts/cache/';
 
 if (glob($post_directory . '*.md') != false)
 {
     $posts_dir = './posts/';
-} else {
+}
+else
+{
     $posts_dir = './dropplets/welcome/';
 }
 
@@ -79,12 +81,14 @@ define('FILE_EXT', '.md');
 /*-----------------------------------------------------------------------------------*/
 
 //no caching if user is logged in
-if ( $_SESSION['user'] ) {
-    $post_cache = 'off';
+if ( $_SESSION['user'] )
+{
+    $post_cache  = 'off';
     $index_cache = 'off';
 }
 
-if (!file_exists(CACHE_DIR) && ($post_cache != 'off' || $index_cache != 'off')) {
+if (!file_exists(CACHE_DIR) && ($post_cache != 'off' || $index_cache != 'off'))
+{
     mkdir(CACHE_DIR,0755,TRUE);
 }
 
@@ -93,11 +97,11 @@ if (!file_exists(CACHE_DIR) && ($post_cache != 'off' || $index_cache != 'off')) 
 /*-----------------------------------------------------------------------------------*/
 
 // Get the active template directory.
-$template_dir = './templates/' . $template . '/';
+$template_dir     = './templates/' . $template . '/';
 $template_dir_url = $blog_url . 'templates/' . $template . '/';
 
 // Get the active template files.
-$index_file = $template_dir . 'index.php';
-$post_file = $template_dir . 'post.php';
-$posts_file = $template_dir . 'posts.php';
-$not_found_file = $template_dir . '404.php';
+$index_file       = $template_dir . 'index.php';
+$post_file        = $template_dir . 'post.php';
+$posts_file       = $template_dir . 'posts.php';
+$not_found_file   = $template_dir . '404.php';
