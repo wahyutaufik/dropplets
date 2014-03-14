@@ -444,7 +444,7 @@ function get_footer() { ?>
                     // Sometimes the scroll function may be called several times until the loading is set to true.
                     // So we need to set it as soon as possible
                     loading = true;
-                    setTimeout(load_next_page,500);
+                    setTimeout(load_next_page, 500);
                 }
             });
         });
@@ -452,7 +452,7 @@ function get_footer() { ?>
     <?php } ?>
 
     <!-- Dropplets Tools -->
-    <?php include('./dropplets/tools.php'); ?>
+    <?php // include('./dropplets/tools.php'); ?>
 
     <!-- User Footer Injection -->
     <?php echo FOOTER_INJECT; ?>
